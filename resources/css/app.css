@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+    display: none !important;
+}
+
+@layer base {
+    body {
+        @apply bg-[#F7F6F1] text-[#333333] antialiased;
+    }
+}
+
+@layer components {
+    .page-shell {
+        @apply mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8;
+    }
+
+    .panel {
+        @apply rounded-lg border border-zinc-200 bg-white shadow-sm;
+    }
+
+    .input {
+        @apply w-full rounded-md border-zinc-300 text-sm shadow-sm focus:border-[#EB9800] focus:ring-[#EB9800];
+    }
+
+    .label {
+        @apply text-xs font-semibold uppercase tracking-wide text-zinc-500;
+    }
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center rounded-md bg-[#EB9800] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#d88a00] focus:outline-none focus:ring-2 focus:ring-[#EB9800] focus:ring-offset-2;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-[#333333] shadow-sm transition hover:bg-zinc-50;
+    }
+
+    .btn-danger {
+        @apply inline-flex items-center justify-center rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100;
+    }
+
+    .btn-success {
+        @apply inline-flex items-center justify-center rounded-md bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2;
+    }
+
+    .status-dot {
+        @apply inline-block size-3 rounded-full;
+    }
+
+    .nav-link {
+        @apply rounded-md px-3 py-2 text-sm font-semibold text-zinc-600 transition hover:bg-[#FDD07D] hover:text-[#333333];
+    }
+
+    .nav-link-active {
+        @apply bg-[#FDD07D] text-[#333333];
+    }
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    .print-label,
+    .print-label * {
+        visibility: visible;
+    }
+
+    .print-label {
+        position: fixed;
+        inset: 0 auto auto 0;
+        width: 90mm;
+        padding: 8mm;
+        background: white;
+        color: #111;
+        box-shadow: none;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
