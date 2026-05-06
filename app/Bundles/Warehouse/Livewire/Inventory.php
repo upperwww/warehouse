@@ -79,7 +79,7 @@ class Inventory extends Component
     {
         $check = InventoryCheck::findOrFail($checkId);
 
-        abort_unless($this->canManageInventory() || $check->status === 'active', 403);
+        abort_unless($this->canViewPreviousChecks() || $check->status === 'active', 403);
 
         $this->activeCheckId = $checkId;
         $this->clearScanForm();
@@ -155,40 +155,12 @@ class Inventory extends Component
         }
 
         DB::transaction(function () use ($check): void {
-            $check->items()
-                ->whereNull('checked_at')
-                ->update([
-                    'actual_status' => SlabStatus::Missing->value,
-                    'result' => 'missing',
-                    'checked_at' => now(),
-                ]);
+            $this->markUncheckedItemsMissing($check);
 
             $check->items()
                 ->with('slab')
                 ->get()
-                ->each(function (InventoryCheckItem $item): void {
-                    $slab = $item->slab;
-                    $oldStatus = $slab->status;
-                    $oldLocation = (string) $slab->location;
-                    $updates = [
-                        'location' => $item->actual_location ?: $item->expected_location,
-                    ];
-
-                    if ($item->result === 'missing') {
-                        $updates['status'] = SlabStatus::Missing->value;
-                    }
-
-                    if ($oldStatus === SlabStatus::Missing && $item->result === 'found' && $item->actual_status) {
-                        $updates['status'] = $item->actual_status;
-                    }
-
-                    if (in_array($item->result, ['damaged', 'wrong_status'], true) && $item->actual_status) {
-                        $updates['status'] = $item->actual_status;
-                    }
-
-                    $slab->update($updates);
-                    $this->logInventoryMovement($item, $slab, $oldStatus, $oldLocation);
-                });
+                ->each(fn (InventoryCheckItem $item) => $this->applyInventoryResult($item));
 
             $check->update([
                 'status' => 'completed',
@@ -198,6 +170,48 @@ class Inventory extends Component
         });
 
         $this->dispatch('notify', message: 'Inventory completed.');
+    }
+
+    private function markUncheckedItemsMissing(InventoryCheck $check): void
+    {
+        $check->items()
+            ->whereNull('checked_at')
+            ->update([
+                'actual_status' => SlabStatus::Missing->value,
+                'result' => 'missing',
+                'checked_at' => now(),
+            ]);
+    }
+
+    private function applyInventoryResult(InventoryCheckItem $item): void
+    {
+        $slab = $item->slab;
+        $oldStatus = $slab->status;
+        $oldLocation = (string) $slab->location;
+
+        $slab->update([
+            'location' => $item->actual_location ?: $item->expected_location,
+            'status' => $this->statusAfterInventory($item, $slab),
+        ]);
+
+        $this->logInventoryMovement($item, $slab, $oldStatus, $oldLocation);
+    }
+
+    private function statusAfterInventory(InventoryCheckItem $item, Slab $slab): SlabStatus|string
+    {
+        if ($item->result === 'missing') {
+            return SlabStatus::Missing;
+        }
+
+        if ($slab->status === SlabStatus::Missing && $item->result === 'found' && $item->actual_status) {
+            return $item->actual_status;
+        }
+
+        if (in_array($item->result, ['damaged', 'wrong_status'], true) && $item->actual_status) {
+            return $item->actual_status;
+        }
+
+        return $slab->status;
     }
 
     public function clearScanForm(): void
@@ -300,14 +314,9 @@ class Inventory extends Component
             : null;
     }
 
-    private function authorizeWarehouseManager(): void
+    private function canViewPreviousChecks(): bool
     {
-        abort_unless($this->canManageInventory(), 403);
-    }
-
-    private function canManageInventory(): bool
-    {
-        return auth()->user()?->hasAnyRole(['Admin', 'Manager']) ?? false;
+        return auth()->user()?->canViewWarehouseHistory() ?? false;
     }
 
     private function logInventoryMovement(InventoryCheckItem $item, Slab $slab, SlabStatus $oldStatus, string $oldLocation): void
@@ -345,7 +354,7 @@ class Inventory extends Component
 
     public function render()
     {
-        $canManageInventory = $this->canManageInventory();
+        $canViewPreviousChecks = $this->canViewPreviousChecks();
         $check = $this->activeCheck();
         $counts = $check
             ? $check->items()
@@ -355,8 +364,8 @@ class Inventory extends Component
             : collect();
 
         return view('Warehouse::Livewire.inventory', [
-            'canManageInventory' => $canManageInventory,
-            'checks' => $canManageInventory
+            'canViewPreviousChecks' => $canViewPreviousChecks,
+            'checks' => $canViewPreviousChecks
                 ? InventoryCheck::query()
                     ->with('starter')
                     ->withCount('items')

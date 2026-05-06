@@ -33,7 +33,7 @@ class Materials extends Component
 
     public function create(): void
     {
-        $this->authorizeWarehouseManager();
+        $this->authorizeWarehouseWrite();
 
         $this->resetForm();
         $this->showModal = true;
@@ -41,7 +41,7 @@ class Materials extends Component
 
     public function save(): void
     {
-        $this->authorizeWarehouseManager();
+        $this->authorizeWarehouseWrite();
 
         $data = $this->validate([
             'name' => ['required', 'string', 'max:120'],
@@ -87,7 +87,7 @@ class Materials extends Component
 
     public function edit(Material $material): void
     {
-        $this->authorizeWarehouseManager();
+        $this->authorizeWarehouseWrite();
 
         $this->editingId = $material->id;
         $this->name = $material->name;
@@ -100,7 +100,7 @@ class Materials extends Component
 
     public function delete(Material $material): void
     {
-        $this->authorizeWarehouseManager();
+        $this->authorizeWarehouseWrite();
 
         $slabCount = $material->slabs()->count();
 
@@ -127,7 +127,7 @@ class Materials extends Component
 
     public function replaceAndDelete(): void
     {
-        $this->authorizeWarehouseManager();
+        $this->authorizeWarehouseWrite();
 
         $data = $this->validate([
             'deletingMaterialId' => ['required', 'exists:materials,id'],
@@ -201,9 +201,9 @@ class Materials extends Component
         Storage::disk('public')->delete($path);
     }
 
-    private function authorizeWarehouseManager(): void
+    private function authorizeWarehouseWrite(): void
     {
-        abort_unless(auth()->user()?->hasAnyRole(['Admin', 'Manager']), 403);
+        abort_unless(auth()->user()?->canManageWarehouse(), 403);
     }
 
     private function deleteMaterial(Material $material): void

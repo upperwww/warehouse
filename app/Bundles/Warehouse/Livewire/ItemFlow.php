@@ -42,7 +42,7 @@ class ItemFlow extends Component
 
     public function receive(): void
     {
-        $this->authorizeWarehouseManager();
+        $this->authorizeWarehouseWrite();
 
         $data = $this->validate([
             'material_id' => ['required', 'exists:materials,id'],
@@ -86,7 +86,7 @@ class ItemFlow extends Component
 
     public function ship(): void
     {
-        $this->authorizeWarehouseManager();
+        $this->authorizeWarehouseWrite();
 
         $data = $this->validate([
             'slab_id' => ['required', 'exists:slabs,id'],
@@ -135,9 +135,9 @@ class ItemFlow extends Component
         return 'WH-'.str_pad((string) $slab->id, 6, '0', STR_PAD_LEFT);
     }
 
-    private function authorizeWarehouseManager(): void
+    private function authorizeWarehouseWrite(): void
     {
-        abort_unless(auth()->user()?->hasAnyRole(['Admin', 'Manager']), 403);
+        abort_unless(auth()->user()?->canManageWarehouse(), 403);
     }
 
     private function logMovement(string $action, Slab $slab, string $description, ?array $changes = null): void

@@ -39,7 +39,7 @@ class Slabs extends Component
 
     public function create(): void
     {
-        $this->authorizeWarehouseManager();
+        $this->authorizeWarehouseWrite();
 
         $this->resetForm();
         $this->showModal = true;
@@ -47,7 +47,7 @@ class Slabs extends Component
 
     public function save(): void
     {
-        $this->authorizeWarehouseManager();
+        $this->authorizeWarehouseWrite();
 
         $data = $this->validate([
             'material_id' => ['required', 'exists:materials,id'],
@@ -112,7 +112,7 @@ class Slabs extends Component
 
     public function edit(Slab $slab): void
     {
-        $this->authorizeWarehouseManager();
+        $this->authorizeWarehouseWrite();
 
         $this->editingId = $slab->id;
         $this->material_id = $slab->material_id;
@@ -139,7 +139,7 @@ class Slabs extends Component
 
     public function delete(Slab $slab): void
     {
-        $this->authorizeWarehouseManager();
+        $this->authorizeWarehouseWrite();
 
         $this->logMovement('archived', $slab, "Archived item {$slab->code}.");
         $slab->delete();
@@ -247,9 +247,9 @@ class Slabs extends Component
         $this->resetPage();
     }
 
-    private function authorizeWarehouseManager(): void
+    private function authorizeWarehouseWrite(): void
     {
-        abort_unless(auth()->user()?->hasAnyRole(['Admin', 'Manager']), 403);
+        abort_unless(auth()->user()?->canManageWarehouse(), 403);
     }
 
     private function logMovement(string $action, Slab $slab, string $description, ?array $changes = null): void

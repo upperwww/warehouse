@@ -2,9 +2,7 @@
 
 namespace App\Bundles\Warehouse\Livewire;
 
-use App\Bundles\Warehouse\Models\InventoryCheckItem;
 use App\Bundles\Warehouse\Models\Slab;
-use App\Bundles\Warehouse\Models\StockMovement;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\SvgWriter;
 use Livewire\Attributes\Layout;
@@ -31,22 +29,21 @@ class SlabDetails extends Component
 
     public function render()
     {
-        $canViewHistory = auth()->user()?->hasAnyRole(['Admin', 'Manager']) ?? false;
+        $canViewHistory = auth()->user()?->canViewWarehouseHistory() ?? false;
 
         return view('Warehouse::Livewire.slab-details', [
             'canViewHistory' => $canViewHistory,
             'movements' => $canViewHistory
-                ? StockMovement::query()
+                ? $this->slab
+                    ->stockMovements()
                     ->with('actor')
-                    ->where('type', 'item')
-                    ->where('subject_id', $this->slab->id)
                     ->latest()
                     ->paginate(8)
                 : null,
             'inventoryHistory' => $canViewHistory
-                ? InventoryCheckItem::query()
+                ? $this->slab
+                    ->inventoryItems()
                     ->with(['inventoryCheck', 'checker'])
-                    ->where('slab_id', $this->slab->id)
                     ->latest()
                     ->take(8)
                     ->get()

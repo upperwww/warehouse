@@ -29,7 +29,7 @@ class Profile extends Component
 
     public function mount(?User $user = null): void
     {
-        if ($user && ! Auth::user()?->hasRole(UserRole::Admin->value)) {
+        if ($user && ! Auth::user()?->isAdmin()) {
             abort(403);
         }
 
@@ -112,7 +112,7 @@ class Profile extends Component
     public function canEditOwnProfile(): bool
     {
         return $this->profileUser()->is(Auth::user())
-            && Auth::user()?->hasRole(UserRole::Admin->value);
+            && Auth::user()?->isAdmin();
     }
 
     private function fillProfileForm(): void

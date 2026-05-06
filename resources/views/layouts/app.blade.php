@@ -27,12 +27,12 @@
                         <a href="{{ route('warehouse.dashboard') }}" @class(['nav-link', 'nav-link-active' => request()->routeIs('warehouse.dashboard')])>{{ __('Dashboard') }}</a>
                         <a href="{{ route('warehouse.slabs') }}" @class(['nav-link', 'nav-link-active' => request()->routeIs('warehouse.slabs')])>{{ __('Items') }}</a>
                         <a href="{{ route('warehouse.inventory') }}" @class(['nav-link', 'nav-link-active' => request()->routeIs('warehouse.inventory')])>{{ __('Inventory') }}</a>
-                        @if (auth()->user()?->hasAnyRole(['Admin', 'Manager']))
+                        @if (auth()->user()?->canManageWarehouse())
                             <a href="{{ route('warehouse.materials') }}" @class(['nav-link', 'nav-link-active' => request()->routeIs('warehouse.materials')])>{{ __('Materials') }}</a>
                             <a href="{{ route('warehouse.item-flow') }}" @class(['nav-link', 'nav-link-active' => request()->routeIs('warehouse.item-flow')])>{{ __('Item flow') }}</a>
                             <a href="{{ route('warehouse.stock-movements') }}" @class(['nav-link', 'nav-link-active' => request()->routeIs('warehouse.stock-movements')])>{{ __('Stock movements') }}</a>
                         @endif
-                        @if (auth()->user()?->hasRole('Admin'))
+                        @if (auth()->user()?->isAdmin())
                             <a href="{{ route('warehouse.employees') }}" @class(['nav-link', 'nav-link-active' => request()->routeIs('warehouse.employees')])>{{ __('Employees') }}</a>
                         @endif
                     </nav>

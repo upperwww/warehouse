@@ -15,7 +15,7 @@ class Dashboard extends Component
 {
     public function render()
     {
-        $canViewActivity = auth()->user()?->hasAnyRole(['Admin', 'Manager']) ?? false;
+        $canViewActivity = auth()->user()?->canViewWarehouseHistory() ?? false;
 
         $statusCounts = Slab::query()
             ->selectRaw('status, count(*) as total')
@@ -29,7 +29,9 @@ class Dashboard extends Component
             'reservedCount' => $statusCounts[SlabStatus::Reserved->value] ?? 0,
             'damagedCount' => $statusCounts[SlabStatus::Damaged->value] ?? 0,
             'missingCount' => $statusCounts[SlabStatus::Missing->value] ?? 0,
-            'totalArea' => Slab::all()->sum('area_m2'),
+            'totalArea' => Slab::query()
+                ->selectRaw('coalesce(sum((length_cm * width_cm) / 10000), 0) as total')
+                ->value('total'),
             'recentSlabs' => Slab::with('material')->latest()->take(6)->get(),
             'problemSlabs' => Slab::with('material')
                 ->whereIn('status', [SlabStatus::Damaged->value, SlabStatus::Missing->value])

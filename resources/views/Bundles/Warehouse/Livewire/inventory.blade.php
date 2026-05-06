@@ -6,8 +6,8 @@
         </div>
     </div>
 
-    <div class="grid gap-6 {{ $canManageInventory ? 'lg:grid-cols-[340px_1fr]' : '' }}">
-        @if ($canManageInventory)
+    <div class="grid gap-6 {{ $canViewPreviousChecks ? 'lg:grid-cols-[340px_1fr]' : '' }}">
+        @if ($canViewPreviousChecks)
         <aside class="space-y-6">
             <form wire:submit="startInventory" class="panel p-5">
                 <h2 class="font-bold">{{ __('Start inventory') }}</h2>
@@ -50,7 +50,7 @@
         @endif
 
         <div class="space-y-6">
-            @unless ($canManageInventory)
+            @unless ($canViewPreviousChecks)
                 <form wire:submit="startInventory" class="panel p-5">
                     <h2 class="font-bold">{{ __('Start inventory') }}</h2>
                     <p class="mt-1 text-sm text-zinc-500">{{ __('Create a new check and start scanning warehouse items.') }}</p>
@@ -234,7 +234,7 @@
                 <div class="panel p-10 text-center">
                     <h2 class="text-xl font-bold">{{ __('No inventory selected') }}</h2>
                     <p class="mt-2 text-sm text-zinc-500">
-                        @if ($canManageInventory)
+                        @if ($canViewPreviousChecks)
                             {{ __('Start an inventory check or open a recent one.') }}
                         @else
                             {{ __('There is no active inventory check right now.') }}

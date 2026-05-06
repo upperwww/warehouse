@@ -5,7 +5,7 @@
             <p class="mt-1 text-sm text-zinc-600">{{ __('Physical stone slabs in the warehouse.') }}</p>
         </div>
 
-        @if (auth()->user()?->hasAnyRole(['Admin', 'Manager']))
+        @if (auth()->user()?->canManageWarehouse())
             <div class="flex gap-2">
                 <button wire:click="exportCsv" type="button" class="btn-secondary">{{ __('Export CSV') }}</button>
                 <button wire:click="create" type="button" class="btn-success">{{ __('Add Item +') }}</button>
@@ -106,7 +106,7 @@
                                     {{ $slab->status->label() }}
                                 </span>
                             </td>
-                            @if (auth()->user()?->hasAnyRole(['Admin', 'Manager']))
+                            @if (auth()->user()?->canManageWarehouse())
                                 <td class="px-5 py-4">
                                     <div class="flex justify-end gap-2">
                                         <a href="{{ route('warehouse.slabs.show', $slab) }}" class="btn-secondary">{{ __('Details') }}</a>

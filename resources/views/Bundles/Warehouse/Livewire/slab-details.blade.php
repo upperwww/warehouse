@@ -8,7 +8,7 @@
 
         <div class="flex gap-2">
             <button onclick="window.print()" type="button" class="btn-secondary">Print label</button>
-            @if (auth()->user()?->hasAnyRole(['Admin', 'Manager']))
+            @if (auth()->user()?->canManageWarehouse())
                 <a href="{{ route('warehouse.slabs') }}" class="btn-success">Edit in items</a>
             @endif
         </div>
