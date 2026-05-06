@@ -20,7 +20,7 @@
                 <div class="flex items-center gap-8">
                     <a href="{{ route('warehouse.dashboard') }}" class="flex items-center gap-3">
                         <span class="grid size-9 place-items-center rounded-md bg-[#EB9800] font-black text-white">W</span>
-                        <span class="text-lg font-bold text-[#333333]">{{ __('Warehouse') }}</span>
+                        <span class="text-lg font-bold text-[#333333]">Warehouse</span>
                     </a>
 
                     <nav class="hidden items-center gap-1 md:flex">
