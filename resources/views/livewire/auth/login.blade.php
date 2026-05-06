@@ -2,7 +2,6 @@
     <div class="mb-8 text-center">
         <div class="mx-auto mb-4 grid size-14 place-items-center rounded-lg bg-[#EB9800] text-2xl font-black text-white">W</div>
         <h1 class="text-3xl font-bold text-[#333333]">{{ __('Warehouse login') }}</h1>
-        <p class="mt-2 text-sm text-zinc-600">{{ __('Use admin@example.com / password after the first migration.') }}</p>
     </div>
 
     <form wire:submit="login" class="panel space-y-5 p-6">

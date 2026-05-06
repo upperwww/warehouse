@@ -9,14 +9,14 @@
 /.env.backup
 /.phpunit.cache
 /storage/*.key
+/storage/app/private/livewire-tmp/*
+/storage/app/public/*
 /storage/framework/cache/data/*
+/bootstrap/cache/*.php
 /storage/framework/sessions/*
 /storage/framework/testing/*
 /storage/framework/views/*
 /storage/logs/*
-/storage/app/private/livewire-tmp/*
-/storage/app/public/*
-/bootstrap/cache/*.php
 /database/*.sqlite
 npm-debug.log
 yarn-error.log

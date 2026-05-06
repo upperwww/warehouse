@@ -5,7 +5,9 @@
             <p class="mt-1 text-sm text-zinc-600">{{ __('Stock overview for materials and slabs.') }}</p>
         </div>
 
-        <a href="{{ route('warehouse.slabs') }}" class="btn-primary">{{ __('Add or find slab') }}</a>
+        <a href="{{ route('warehouse.slabs') }}" class="btn-primary">
+            {{ auth()->user()?->canManageWarehouse() ? __('Add or find slab') : __('Find slab') }}
+        </a>
     </div>
 
     <div class="grid gap-4 md:grid-cols-6">
